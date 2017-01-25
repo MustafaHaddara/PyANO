@@ -3,6 +3,7 @@
 import sys
 
 # first party
+from audio import AudioPlayer
 from key import Key
 
 # external libs
@@ -120,30 +121,10 @@ def draw_keys():
         draw_key(k)
 
 
-def manipulate_audio(key_num):
-    # 440 Hz A4
-    offset = key_num - 49
-    pitch = 2 ** (offset/12.0)
-    # TODO play A4 track sped up/slowed down to correct pitch
-
-
-def play_note(key):
-    if key is None:
-        return
-    key.toggle_highlight()
-    print('playing %s' % key.key_num)  # placeholder
-
-
-def stop_note(key):
-    if key is None:
-        return
-    key.toggle_highlight()
-    print('stopping %s' % key.key_num)  # placeholder
-
-
 def init():
     global window, font  # ew global variables
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    pygame.mixer.pre_init(channels=1)
     pygame.init()
     font = pygame.font.SysFont('Arial', size=36)
     window.fill(color=pygame.Color('black'))
@@ -153,6 +134,7 @@ def init():
 def main():
     init()
     clicked_key = None
+    player = AudioPlayer()
     while True:
         draw_keys()
         for event in pygame.event.get():
@@ -160,18 +142,18 @@ def main():
                 if event.key == K_ESCAPE:
                     quit()
                 else:
-                    play_note(get_key_of(event.key))
+                    player.play_note(get_key_of(event.key))
 
             if event.type == KEYUP:
-                stop_note(get_key_of(event.key))
+                player.stop_note(get_key_of(event.key))
 
             if event.type == MOUSEBUTTONDOWN:
                 mPos = pygame.mouse.get_pos()
                 clicked_key = get_key_at(mPos)
-                play_note(clicked_key)
+                player.play_note(clicked_key)
 
             if event.type == MOUSEBUTTONUP:
-                stop_note(clicked_key)
+                player.stop_note(clicked_key)
 
             if event.type == QUIT:
                 quit()
