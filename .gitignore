@@ -1,3 +1,7 @@
+# MacOS Stuff
+.DS_Store
+
+# Auto-generate python ignores
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
