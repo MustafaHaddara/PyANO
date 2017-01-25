@@ -16,4 +16,5 @@ class Key():
         self.mouse_trigger = pygame.Rect(0,0,0,0)
 
     def toggle_highlight(self):
+        # toggles the highlights
         self.color, self.shaded = self.shaded, self.color

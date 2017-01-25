@@ -27,18 +27,10 @@ WHITE_KEY_HEIGHT = WINDOW_HEIGHT
 WHITE_KEY_SPACING = 4  # needs to be even
 LABEL_V_OFFSET = 10
 
-NUM_BLACK_KEYS = NUM_OCTAVES * 5
 BLACK_KEY_WIDTH = WHITE_KEY_WIDTH/3*2  # also arbitrary
 BLACK_KEY_HEIGHT = 300  # also arbitrary
 
 WINDOW_WIDTH = NUM_WHITE_KEYS*WHITE_KEY_WIDTH + (NUM_WHITE_KEYS-1) * WHITE_KEY_SPACING
-
-window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.init()
-font = pygame.font.SysFont('Arial', size=36)
-
-window.fill(color=pygame.Color('black'))
-
 
 keys = [
     Key('TAB', K_TAB, 40),               # C4
@@ -68,15 +60,19 @@ keys = [
 ]
 
 
-def get_keys(color):
-    return (k for k in keys if k.type == color)
+def get_keys(type):
+    # returns generator for all keys of given type
+    return (k for k in keys if k.type == type)
 
 
 def get_key_of(keycode):
+    # returns the key which corresponds to the given keycode, or None if no such key exists
     return next( (k for k in keys if k.keyboard_code==keycode), None)
 
 
 def get_key_at(pos):
+    # returns the top-most (ie. visible) key at a given coordinate
+    # check black keys first (because black keys are 'on top' of white keys)
     candidate = next( (bkey for bkey in get_keys('black') if bkey.mouse_trigger.collidepoint(pos)), None)
     if candidate is None:
         candidate = next( (bkey for bkey in get_keys('white') if bkey.mouse_trigger.collidepoint(pos)), None)
@@ -93,14 +89,20 @@ def build_keys():
         if k.type == 'white':
             width = WHITE_KEY_WIDTH
             height = WHITE_KEY_HEIGHT
+            # increment if we're building a white key
             left_offset += left_increment
         else:
             width = BLACK_KEY_WIDTH
             height = BLACK_KEY_HEIGHT
             left = left - black_key_offset
+        # this is the bounding Rect for capture mouse clicks
+        # and for drawing
         k.mouse_trigger = pygame.Rect(left, top, width, height)
 
+        # font.render returns a pygame Surface object
+        # we'll need to blit it to the screen after we draw the bounding rect
         k.label_text = font.render(k.label, True, pygame.Color(k.label_color))
+        # determine position to draw the text
         label_left = left + (width - k.label_text.get_width())/2
         label_top = height - LABEL_V_OFFSET - k.label_text.get_height()
         k.label_position = (label_left, label_top)
@@ -117,32 +119,39 @@ def draw_keys():
     for k in get_keys('black'):
         draw_key(k)
 
-    pygame.display.flip()
-
 
 def manipulate_audio(key_num):
     # 440 Hz A4
     offset = key_num - 49
     pitch = 2 ** (offset/12.0)
-    # TODO
+    # TODO play A4 track sped up/slowed down to correct pitch
 
 
 def play_note(key):
     if key is None:
         return
     key.toggle_highlight()
-    print('playing %s' % key.key_num)
+    print('playing %s' % key.key_num)  # placeholder
 
 
 def stop_note(key):
     if key is None:
         return
     key.toggle_highlight()
-    print('stopping %s' % key.key_num)
+    print('stopping %s' % key.key_num)  # placeholder
+
+
+def init():
+    global window, font  # ew global variables
+    window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    pygame.init()
+    font = pygame.font.SysFont('Arial', size=36)
+    window.fill(color=pygame.Color('black'))
+    build_keys()
 
 
 def main():
-    build_keys()
+    init()
     clicked_key = None
     while True:
         draw_keys()
@@ -167,8 +176,8 @@ def main():
             if event.type == QUIT:
                 quit()
 
-        pygame.time.wait(30)
-        pygame.display.flip() ## Updating the screen
+        pygame.display.flip()
+        pygame.time.wait(30)  # not strictly necessary to wait
 
 
 def quit():
