@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/local/bin/python
 # stdlib
 import sys
 
@@ -140,6 +140,7 @@ def main():
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
+                    player.close()
                     quit()
                 else:
                     player.play_note(get_key_of(event.key))
@@ -156,6 +157,7 @@ def main():
                 player.stop_note(clicked_key)
 
             if event.type == QUIT:
+                player.close()
                 quit()
 
         pygame.display.flip()
