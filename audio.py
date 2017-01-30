@@ -1,5 +1,6 @@
 #!/usr/local/bin/python
 # audio lib
+import time
 
 import pyo
 
@@ -35,7 +36,10 @@ class AudioPlayer():
         key.toggle_highlight()
         self.get_sound_for(key.key_num).stop()
 
-    # TODO we still crash on shutdown, dunno why
     def close(self):
         self.pyo_server.stop()
+        # The server takes some time to stop
+        # https://groups.google.com/d/msg/pyo-discuss/LdZR3MNIjq4/22Pc20hczLgJ
+        time.sleep(1)  
+        # and this way we don't crash when we shutdown
         self.pyo_server.shutdown()
