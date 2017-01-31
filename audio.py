@@ -24,15 +24,18 @@ class AudioPlayer():
         except KeyError:
             semitone_diff = key_num - A4_KEY_NUM
             pitch_shift = 2**(semitone_diff/12.0)
-            sound = pyo.SfPlayer('piano_A.wav', speed=[pitch_shift,pitch_shift], mul=0.5)
+            fader = pyo.Fader(mul=.5)
+            sound = pyo.SfPlayer('piano_A.wav', speed=[pitch_shift,pitch_shift], mul=fader)
             self.sounds[key_num] = sound
             return sound
 
     def play_note(self, key):
-        if key is None or (key.key_num in self.sounds and self.sounds[key.key_num].isPlaying()):
+        if key is None:
             return
         key.toggle_highlight()
-        self.get_sound_for(key.key_num).out()
+        sound = self.get_sound_for(key.key_num)
+        sound.out()
+        sound.mul.out()
 
 
     def stop_note(self, key):
@@ -40,8 +43,12 @@ class AudioPlayer():
             return
         key.toggle_highlight()
         sound = self.get_sound_for(key.key_num)
-        sound.stop()
-        del sound
+        sound.mul.stop()
+        try:
+            del sound.mul
+            del sound
+        except AttributeError:
+            pass
 
     def close(self):
         print('stopping')
