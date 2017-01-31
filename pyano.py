@@ -1,12 +1,14 @@
 #!/usr/local/bin/python
-# stdlib
+# main class for the piano
+
+# stdlib imports
 import sys
 
-# first party
+# package imports
 from audio import AudioPlayer
 from key import Key
 
-# external libs
+# external lib imports
 import pygame
 
 # event type constants
@@ -99,44 +101,35 @@ def build_keys():
         # this is the bounding Rect for capture mouse clicks
         # and for drawing
         k.mouse_trigger = pygame.Rect(left, top, width, height)
-
-        # font.render returns a pygame Surface object
-        # we'll need to blit it to the screen after we draw the bounding rect
-        k.label_text = font.render(k.label, True, pygame.Color(k.label_color))
         # determine position to draw the text
         label_left = left + (width - k.label_text.get_width())/2
         label_top = height - LABEL_V_OFFSET - k.label_text.get_height()
         k.label_position = (label_left, label_top)
 
 
-def draw_key(key):
-    window.fill(color=pygame.Color(key.color), rect=key.mouse_trigger)
-    window.blit(key.label_text, key.label_position) 
-
-
-def draw_keys():
+def draw_keys(window):
     for k in get_keys('white'):
-        draw_key(k)
+        k.draw(window)
     for k in get_keys('black'):
-        draw_key(k)
+        k.draw(window)
 
 
-def init():
-    global window, font  # ew global variables
+def init_window():
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     pygame.mixer.pre_init(channels=1)
     pygame.init()
-    font = pygame.font.SysFont('Arial', size=36)
+    
     window.fill(color=pygame.Color('black'))
     build_keys()
+    return window
 
 
 def main():
-    init()
+    window = init_window()
     clicked_key = None
     player = AudioPlayer()
     while True:
-        draw_keys()
+        draw_keys(window)
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
