@@ -116,6 +116,7 @@ def draw_keys(window):
 
 def init_window():
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    pygame.display.set_caption('PyANO')
     pygame.mixer.pre_init(channels=1)
     pygame.init()
     
