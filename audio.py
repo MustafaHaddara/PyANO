@@ -2,7 +2,14 @@
 # This class manages playing audio
 
 # stdlib imports
+import os
+import sys
 import time
+
+# redirect output because pyo likes to print stuff when it gets imported
+sys.stdout = open(os.devnull, 'w')
+sys.stderr = sys.stdout
+
 # external lib imports
 import pyo
 
@@ -51,14 +58,12 @@ class AudioPlayer():
             pass
 
     def close(self):
-        print('stopping')
-        self.pyo_server.stop()
-        print('stopped')
-        # The server takes some time to stop
-        # https://groups.google.com/d/msg/pyo-discuss/LdZR3MNIjq4/22Pc20hczLgJ
-        # and this way we don't crash when we shutdown
+        # If we try to stop the server while audio is still playing
+        # everything crashes so we wait for a while to make sure all 
+        # of the sounds have finished playing
         time.sleep(1)
-        # we also (mysteriously) need these print statements to prevent the crash
-        print('shutting down')
+        self.pyo_server.stop()
+        # Additionally, the server takes some time to stop
+        # https://groups.google.com/d/msg/pyo-discuss/LdZR3MNIjq4/22Pc20hczLgJ
+        time.sleep(1)
         self.pyo_server.shutdown()
-        print('shut down')
