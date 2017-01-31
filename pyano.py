@@ -2,7 +2,13 @@
 # main class for the piano
 
 # stdlib imports
+import os
 import sys
+import time
+
+# redirect output because pyo likes to print stuff when it gets imported
+# sys.stdout = open(os.devnull, 'w')
+# sys.stderr = sys.stdout
 
 # package imports
 from audio import AudioPlayer
