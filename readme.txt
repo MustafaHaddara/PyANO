@@ -7,6 +7,9 @@ with the aid of the pygame library (https://www.pygame.org/lofi.html)
 for graphics and the pyo library (http://ajaxsoundstudio.com/software/pyo/)
 for sound processing
 
+"piano_A.mp3" audio from http://www.vibrationdata.com/piano.htm
+    audio downloaded as mp3 and converted to wav
+
 Features:
 
 - 2 octaves (starts at C4 and goes up to B5)
